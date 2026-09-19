@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safetynet.alerts.mapper.AlertMapper;
 import com.safetynet.alerts.service.AgeService;
 import com.safetynet.alerts.service.AlertDataService;
 
@@ -29,7 +30,7 @@ class AlertControllerTest {
         Files.copy(Path.of("src/main/resources/data.json"), file);
         AlertDataService service = new AlertDataService(new ObjectMapper(), file);
         service.load();
-        mockMvc = MockMvcBuilders.standaloneSetup(new AlertController(service, new AgeService()), new CrudController(service)).setControllerAdvice(new ApiExceptionHandler()).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new AlertController(service, new AgeService()), new CrudController(service, new AlertMapper())).setControllerAdvice(new ApiExceptionHandler()).build();
     }
 
     @Test
