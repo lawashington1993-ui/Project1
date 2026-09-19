@@ -1,7 +1,11 @@
 package com.safetynet.alerts.model;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class Firestation {
+    @NotBlank
     private String address;
+    @NotBlank
     private String station;
 
     public String getAddress() { return address; }
