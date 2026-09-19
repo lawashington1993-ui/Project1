@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.model.AlertData;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
@@ -41,7 +42,7 @@ public class AlertDataService {
         try {
             data = objectMapper.readValue(dataPath.toFile(), AlertData.class);
             logger.info("Loaded {} people from {}", data.getPersons().size(), dataPath);
-        } catch (IOException exception) {
+        } catch (JacksonException exception) {
             logger.error("Unable to load data file {}", dataPath, exception);
             throw new IllegalStateException("The data file could not be loaded", exception);
         }
@@ -55,6 +56,9 @@ public class AlertDataService {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(temporary.toFile(), data);
             Files.move(temporary, dataPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             logger.info("Saved changes to {}", dataPath);
+        } catch (JacksonException exception) {
+            logger.error("Unable to save data file {}", dataPath, exception);
+            throw new IllegalStateException("The data file could not be saved", exception);
         } catch (IOException exception) {
             logger.error("Unable to save data file {}", dataPath, exception);
             throw new IllegalStateException("The data file could not be saved", exception);
