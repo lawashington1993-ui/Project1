@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafetyNet Alerts | Data Management</title>
+  <style>
+    :root { --ink: #17212b; --muted: #65717d; --line: #d9e0e5; --paper: #f6f8f7; --blue: #11698e; --orange: #e76f32; --danger: #b42318; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font: 15px/1.5 Georgia, 'Times New Roman', serif; }
+    header { padding: 34px 6vw 28px; color: white; background: var(--blue); border-bottom: 7px solid var(--orange); }
+    header p { max-width: 680px; margin: 8px 0 0; color: #d8edf5; }
+    h1, h2 { margin: 0; font-weight: 600; letter-spacing: .01em; }
+    h1 { font-size: clamp(2rem, 4vw, 3.5rem); }
+    h2 { font-size: 1.45rem; }
+    main { width: min(1160px, 88vw); margin: 34px auto 64px; }
+    .intro { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 22px; }
+    .intro p { max-width: 660px; margin: 5px 0 0; color: var(--muted); }
+    .status { padding: 8px 12px; border: 1px solid var(--line); background: white; white-space: nowrap; }
+    .status::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 8px; background: #249a5a; border-radius: 50%; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    section { padding: 22px; background: white; border: 1px solid var(--line); box-shadow: 0 5px 16px #19364b0d; }
+    section > p { min-height: 46px; margin: 6px 0 18px; color: var(--muted); }
+    label { display: block; margin-top: 11px; color: var(--muted); font-size: .88rem; }
+    input, textarea, select { width: 100%; margin-top: 4px; padding: 10px 11px; color: var(--ink); background: #fbfcfc; border: 1px solid var(--line); font: inherit; }
+    textarea { min-height: 76px; resize: vertical; }
+    .actions { display: flex; gap: 8px; margin-top: 18px; }
+    button { padding: 10px 15px; color: white; background: var(--blue); border: 0; cursor: pointer; font: inherit; }
+    button:hover { background: #0b5272; }
+    button.secondary { color: var(--ink); background: #edf1f2; }
+    button.danger { background: var(--danger); }
+    .result { margin-top: 22px; padding: 15px; background: #17212b; color: #d9f0f4; overflow: auto; white-space: pre-wrap; font: 13px/1.5 Consolas, monospace; }
+    .result.error { color: #ffb4ab; }
+    .hint { margin-top: 24px; color: var(--muted); font-size: .9rem; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } section > p { min-height: 0; } .intro { display: block; } .status { display: inline-block; margin-top: 15px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SafetyNet Alerts</h1>
+    <p>Data management console for the emergency services information system.</p>
+  </header>
+  <main>
+    <div class="intro">
+      <div><h2>Manage operational data</h2><p>Choose an action, complete the fields, and submit. Changes are sent to the REST API and written to <code>data.json</code>.</p></div>
+      <div class="status">API connected at <span id="apiOrigin"></span></div>
+    </div>
+    <div class="grid">
+      <section>
+        <h2>Person</h2>
+        <p>Add or update a resident, or delete one by first and last name.</p>
+        <label>Action<select id="personAction"><option value="POST">Add</option><option value="PUT">Update</option><option value="DELETE">Delete</option></select></label>
+        <label>First name<input id="personFirstName" required></label>
+        <label>Last name<input id="personLastName" required></label>
+        <label>Address<input id="personAddress"></label>
+        <label>City<input id="personCity"></label>
+        <label>ZIP<input id="personZip"></label>
+        <label>Phone<input id="personPhone"></label>
+        <label>Email<input id="personEmail" type="email"></label>
+        <div class="actions"><button data-form="person">Send request</button><button class="secondary" data-clear="person">Clear</button></div>
+      </section>
+
+      <section>
+        <h2>Fire station</h2>
+        <p>Create or update an address-to-station mapping, or remove one.</p>
+        <label>Action<select id="stationAction"><option value="POST">Add</option><option value="PUT">Update</option><option value="DELETE">Delete</option></select></label>
+        <label>Address<input id="stationAddress" required></label>
+        <label>Station number<input id="stationNumber"></label>
+        <div class="actions"><button data-form="station">Send request</button><button class="secondary" data-clear="station">Clear</button></div>
+      </section>
+
+      <section>
+        <h2>Medical record</h2>
+        <p>Maintain a resident's birthdate, medications, and allergies.</p>
+        <label>Action<select id="recordAction"><option value="POST">Add</option><option value="PUT">Update</option><option value="DELETE">Delete</option></select></label>
+        <label>First name<input id="recordFirstName" required></label>
+        <label>Last name<input id="recordLastName" required></label>
+        <label>Birthdate<input id="recordBirthdate" placeholder="MM/DD/YYYY"></label>
+        <label>Medications<input id="recordMedications" placeholder="one per line"></label>
+        <label>Allergies<input id="recordAllergies" placeholder="one per line"></label>
+        <div class="actions"><button data-form="record">Send request</button><button class="secondary" data-clear="record">Clear</button></div>
+      </section>
+    </div>
+    <div class="result" id="result">Ready. Submit a form to see the API response.</div>
+    <p class="hint">The API returns <code>201 Created</code> for additions, <code>200 OK</code> for updates, <code>204 No Content</code> for deletions, and <code>404 Not Found</code> when a record does not exist.</p>
+  </main>
+  <script>
+    const result = document.querySelector('#result');
+    document.querySelector('#apiOrigin').textContent = window.location.origin;
+
+    const value = (id) => document.querySelector(`#${id}`).value.trim();
+    const lines = (id) => value(id).split('\n').map((item) => item.trim()).filter(Boolean);
+    const show = (message, error = false) => { result.textContent = message; result.classList.toggle('error', error); };
+
+    function personPayload() {
+      return { firstName: value('personFirstName'), lastName: value('personLastName'), address: value('personAddress'), city: value('personCity'), zip: value('personZip'), phone: value('personPhone'), email: value('personEmail') };
+    }
+    function recordPayload() {
+      return { firstName: value('recordFirstName'), lastName: value('recordLastName'), birthdate: value('recordBirthdate'), medications: lines('recordMedications'), allergies: lines('recordAllergies') };
+    }
+
+    async function send(path, action, payload, query) {
+      const url = query ? `${path}?${new URLSearchParams(query)}` : path;
+      const options = { method: action, headers: { 'Content-Type': 'application/json' } };
+      if (action !== 'DELETE') options.body = JSON.stringify(payload);
+      const response = await fetch(url, options);
+      const text = await response.text();
+      let body = text;
+      try { body = JSON.stringify(JSON.parse(text), null, 2); } catch (ignored) { /* empty response */ }
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}\n${body}`);
+      show(`${action} ${path} -> ${response.status}${body ? `\n\n${body}` : ''}`);
+    }
+
+    async function submit(type) {
+      try {
+        if (type === 'person') {
+          const action = value('personAction'); const payload = personPayload();
+          await send('/person', action, payload, action === 'DELETE' ? { firstName: payload.firstName, lastName: payload.lastName } : null);
+        } else if (type === 'station') {
+          const action = value('stationAction'); const payload = { address: value('stationAddress'), station: value('stationNumber') };
+          const query = { address: payload.address };
+          if (payload.station) query.station = payload.station;
+          await send('/firestation', action, payload, action === 'DELETE' ? query : null);
+        } else {
+          const action = value('recordAction'); const payload = recordPayload();
+          await send('/medicalRecord', action, payload, action === 'DELETE' ? { firstName: payload.firstName, lastName: payload.lastName } : null);
+        }
+      } catch (error) { show(error.message, true); }
+    }
+
+    document.querySelectorAll('button[data-form]').forEach((button) => button.addEventListener('click', () => submit(button.dataset.form)));
+    document.querySelectorAll('button[data-clear]').forEach((button) => button.addEventListener('click', () => {
+      document.querySelectorAll(`[id^="${button.dataset.clear}"]`).forEach((field) => { if (field.tagName === 'SELECT') field.selectedIndex = 0; else field.value = ''; });
+      show('Ready. Submit a form to see the API response.');
+    }));
+  </script>
+</body>
+</html>
