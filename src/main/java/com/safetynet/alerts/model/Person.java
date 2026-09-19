@@ -1,7 +1,11 @@
 package com.safetynet.alerts.model;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class Person {
+    @NotBlank
     private String firstName;
+    @NotBlank
     private String lastName;
     private String address;
     private String city;
