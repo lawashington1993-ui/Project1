@@ -59,4 +59,25 @@ class AlertControllerTest {
         mockMvc.perform(delete("/person?firstName=Temp&lastName=Person")).andExpect(status().isNoContent());
         mockMvc.perform(delete("/person?firstName=Missing&lastName=Person")).andExpect(status().isNotFound());
     }
+
+    @Test
+    void returnsBadRequestForMalformedJson() throws Exception {
+        mockMvc.perform(post("/person").contentType("application/json").content("{invalid"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Request body must contain valid JSON"));
+    }
+
+    @Test
+    void returnsBadRequestForMissingParameter() throws Exception {
+        mockMvc.perform(get("/firestation"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Missing required parameter: stationNumber"));
+    }
+
+    @Test
+    void returnsBadRequestForInvalidPerson() throws Exception {
+        mockMvc.perform(post("/person").contentType("application/json").content("{\"firstName\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").exists());
+    }
 }
