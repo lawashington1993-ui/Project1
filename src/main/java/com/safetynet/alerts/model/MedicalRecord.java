@@ -3,9 +3,14 @@ package com.safetynet.alerts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class MedicalRecord {
+    @NotBlank
     private String firstName;
+    @NotBlank
     private String lastName;
+    @NotBlank
     private String birthdate;
     private List<String> medications = new ArrayList<>();
     private List<String> allergies = new ArrayList<>();
