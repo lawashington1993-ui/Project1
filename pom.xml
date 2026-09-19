@@ -12,7 +12,7 @@
     <artifactId>safetynet-alerts</artifactId>
     <version>1.0.0</version>
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
     </properties>
     <dependencies>
         <dependency>
