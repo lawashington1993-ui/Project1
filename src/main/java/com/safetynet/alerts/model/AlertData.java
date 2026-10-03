@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlertData {
+    // All registered people in the dataset.
     private List<Person> persons = new ArrayList<>();
+
+    // Fire station mappings between addresses and stations.
     private List<Firestation> firestations = new ArrayList<>();
+
+    // Medical records associated with people in the dataset.
     private List<MedicalRecord> medicalrecords = new ArrayList<>();
 
     public List<Person> getPersons() { return persons; }
