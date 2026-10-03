@@ -30,17 +30,27 @@ public class CrudController {
     private final AlertMapper mapper;
     public CrudController(AlertDataService dataService, AlertMapper mapper) { this.dataService = dataService; this.mapper = mapper; }
 
+    // Create a new person record.
     @PostMapping("/person") public ResponseEntity<PersonDto> addPerson(@Valid @RequestBody PersonDto dto) { Person person = mapper.toPerson(dto); dataService.addPerson(person); return ResponseEntity.created(URI.create("/person?firstName=" + person.getFirstName() + "&lastName=" + person.getLastName())).header(HttpHeaders.LOCATION, "/person?firstName=" + person.getFirstName() + "&lastName=" + person.getLastName()).body(mapper.toPersonDto(person)); }
+    // Update an existing person record.
     @PutMapping("/person") public ResponseEntity<?> updatePerson(@Valid @RequestBody PersonDto dto) { Person person = mapper.toPerson(dto); return dataService.updatePerson(person) ? ResponseEntity.ok().header(HttpHeaders.LOCATION, "/person?firstName=" + person.getFirstName() + "&lastName=" + person.getLastName()).body(mapper.toPersonDto(person)) : notFound("Person not found"); }
+    // Remove a person by first and last name.
     @DeleteMapping("/person") public ResponseEntity<?> deletePerson(@RequestParam String firstName, @RequestParam String lastName) { return dataService.deletePerson(firstName, lastName) ? ResponseEntity.noContent().build() : notFound("Person not found"); }
 
+    // Create a new fire station mapping.
     @PostMapping("/firestation") public ResponseEntity<FirestationDto> addFirestation(@Valid @RequestBody FirestationDto dto) { Firestation mapping = mapper.toFirestation(dto); dataService.addFirestation(mapping); return ResponseEntity.created(URI.create("/firestation?stationNumber=" + mapping.getStation())).header(HttpHeaders.LOCATION, "/firestation?stationNumber=" + mapping.getStation()).body(mapper.toFirestationDto(mapping)); }
+    // Update an existing fire station mapping.
     @PutMapping("/firestation") public ResponseEntity<?> updateFirestation(@Valid @RequestBody FirestationDto dto) { Firestation mapping = mapper.toFirestation(dto); return dataService.updateFirestation(mapping) ? ResponseEntity.ok().header(HttpHeaders.LOCATION, "/firestation?stationNumber=" + mapping.getStation()).body(mapper.toFirestationDto(mapping)) : notFound("Mapping not found"); }
+    // Delete a fire station mapping by address and/or station number.
     @DeleteMapping("/firestation") public ResponseEntity<?> deleteFirestation(@RequestParam(required = false) String address, @RequestParam(required = false) String station) { return dataService.deleteFirestation(address, station) ? ResponseEntity.noContent().build() : notFound("Mapping not found"); }
 
+    // Create a new medical record.
     @PostMapping("/medicalRecord") public ResponseEntity<MedicalRecordDto> addRecord(@Valid @RequestBody MedicalRecordDto dto) { MedicalRecord record = mapper.toMedicalRecord(dto); dataService.addRecord(record); return ResponseEntity.created(URI.create("/medicalRecord?firstName=" + record.getFirstName() + "&lastName=" + record.getLastName())).header(HttpHeaders.LOCATION, "/medicalRecord?firstName=" + record.getFirstName() + "&lastName=" + record.getLastName()).body(mapper.toMedicalRecordDto(record)); }
+    // Update an existing medical record.
     @PutMapping("/medicalRecord") public ResponseEntity<?> updateRecord(@Valid @RequestBody MedicalRecordDto dto) { MedicalRecord record = mapper.toMedicalRecord(dto); return dataService.updateRecord(record) ? ResponseEntity.ok().header(HttpHeaders.LOCATION, "/medicalRecord?firstName=" + record.getFirstName() + "&lastName=" + record.getLastName()).body(mapper.toMedicalRecordDto(record)) : notFound("Medical record not found"); }
+    // Remove a medical record by person name.
     @DeleteMapping("/medicalRecord") public ResponseEntity<?> deleteRecord(@RequestParam String firstName, @RequestParam String lastName) { return dataService.deleteRecord(firstName, lastName) ? ResponseEntity.noContent().build() : notFound("Medical record not found"); }
 
+    // Standard 404 response used when a requested entity cannot be found.
     private ResponseEntity<Map<String, String>> notFound(String message) { return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", message)); }
 }
