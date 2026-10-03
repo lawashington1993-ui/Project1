@@ -25,7 +25,7 @@ class AlertControllerTest {
     @TempDir Path tempDir;
     private MockMvc mockMvc;
 
-    // Creates an isolated copy of the JSON dataset for each test case.
+    // Each test gets its own copy of the source JSON so one test cannot affect another.
     @BeforeEach
     void setUp() throws Exception {
         Path file = tempDir.resolve("data.json");
@@ -35,7 +35,7 @@ class AlertControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(new AlertController(service, new AgeService()), new CrudController(service, new AlertMapper())).setControllerAdvice(new ApiExceptionHandler()).build();
     }
 
-    // Verifies all read endpoints return expected success and empty-result responses.
+    // Checks that all read endpoints return the expected HTTP status and data shape.
     @Test
     void supportsAllReadEndpointsAndEmptyResponses() throws Exception {
         mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(jsonPath("$.status").value("running"));
@@ -55,7 +55,7 @@ class AlertControllerTest {
         mockMvc.perform(get("/communityEmail?city=missing")).andExpect(jsonPath("$").isEmpty());
     }
 
-    // Verifies create, update, and delete operations across the CRUD controller.
+    // Confirms the create, update, and delete endpoints behave correctly for the main data objects.
     @Test
     void supportsCrudEndpoints() throws Exception {
         String person = "{\"firstName\":\"Temp\",\"lastName\":\"Person\",\"address\":\"Temp St\",\"city\":\"Culver\",\"zip\":\"00000\",\"phone\":\"000\",\"email\":\"temp@example.com\"}";
@@ -65,7 +65,7 @@ class AlertControllerTest {
         mockMvc.perform(delete("/person?firstName=Missing&lastName=Person")).andExpect(status().isNotFound());
     }
 
-    // Ensures malformed JSON input is rejected with a 400 response.
+    // Verifies that malformed JSON is rejected with a clear 400 response.
     @Test
     void returnsBadRequestForMalformedJson() throws Exception {
         mockMvc.perform(post("/person").contentType("application/json").content("{invalid"))
@@ -73,7 +73,7 @@ class AlertControllerTest {
                 .andExpect(jsonPath("$.error").value("Request body must contain valid JSON"));
     }
 
-    // Ensures missing required query parameters are rejected with a clear validation error.
+    // Verifies that missing required parameters fail with a helpful validation message.
     @Test
     void returnsBadRequestForMissingParameter() throws Exception {
         mockMvc.perform(get("/firestation"))
@@ -81,7 +81,7 @@ class AlertControllerTest {
                 .andExpect(jsonPath("$.error").value("Missing required parameter: stationNumber"));
     }
 
-    // Verifies invalid person payloads fail bean validation and return a 400 response.
+    // Checks that invalid person payloads fail bean validation and return a 400 response.
     @Test
     void returnsBadRequestForInvalidPerson() throws Exception {
         mockMvc.perform(post("/person").contentType("application/json").content("{\"firstName\":\"\"}"))
