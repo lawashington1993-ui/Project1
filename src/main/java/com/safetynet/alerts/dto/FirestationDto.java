@@ -3,8 +3,11 @@ package com.safetynet.alerts.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class FirestationDto {
+    // Address covered by the fire station mapping.
     @NotBlank
     private String address;
+
+    // Fire station number assigned to the address.
     @NotBlank
     private String station;
 
