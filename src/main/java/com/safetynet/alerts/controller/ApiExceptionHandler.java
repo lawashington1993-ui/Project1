@@ -13,15 +13,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+// This class catches application errors and turns them into clean JSON responses.
+// That makes the API easier to understand for clients and easier to debug for developers.
 public class ApiExceptionHandler {
-    // Handles malformed JSON payloads sent to the API.
+    // Catches malformed JSON that the client sends in the request body.
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleMalformedJson(HttpMessageNotReadableException exception) {
         logger.error("Malformed JSON request", exception);
         return ResponseEntity.badRequest().body(Map.of("error", "Request body must contain valid JSON"));
     }
 
-    // Handles validation failures for request payloads such as invalid bean constraints.
+    // Catches validation issues such as missing required fields or invalid data.
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException exception) {
         String message = exception.getBindingResult().getFieldErrors().stream()
@@ -32,7 +34,7 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of("error", message));
     }
 
-    // Handles requests missing a required query parameter.
+    // Handles requests that are missing a required parameter such as a station number.
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<Map<String, String>> handleMissingParameter(MissingServletRequestParameterException exception) {
         String message = "Missing required parameter: " + exception.getParameterName();
@@ -42,7 +44,7 @@ public class ApiExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
-    // Fallback handler for any unhandled exception, returning a generic 500 response.
+    // This is the final safety net for any unexpected server error.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handle(Exception exception) {
         logger.error("Unhandled API exception", exception);
