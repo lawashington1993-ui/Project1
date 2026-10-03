@@ -11,7 +11,7 @@ import com.safetynet.alerts.model.Person;
 class AlertMapperTest {
     private final AlertMapper mapper = new AlertMapper();
 
-    // Verifies person DTOs are mapped to the model and back without losing address data.
+    // Checks that a person DTO keeps its data when it is converted to the model and back again.
     @Test
     void mapsPersonBothDirections() {
         PersonDto dto = new PersonDto(); dto.setFirstName("Jane"); dto.setLastName("Doe"); dto.setAddress("Main St");
@@ -19,14 +19,14 @@ class AlertMapperTest {
         assertThat(mapper.toPersonDto(person).getAddress()).isEqualTo("Main St");
     }
 
-    // Verifies fire station DTOs round-trip correctly through the model layer.
+    // Confirms fire station DTOs survive the round trip through the model layer.
     @Test
     void mapsFirestationBothDirections() {
         FirestationDto dto = new FirestationDto(); dto.setAddress("Main St"); dto.setStation("1");
         assertThat(mapper.toFirestationDto(mapper.toFirestation(dto)).getStation()).isEqualTo("1");
     }
 
-    // Verifies medical record DTOs preserve the birthdate across both mapping directions.
+    // Verifies that a medical record keeps its birth date through both mapping directions.
     @Test
     void mapsMedicalRecordBothDirections() {
         MedicalRecordDto dto = new MedicalRecordDto(); dto.setFirstName("Jane"); dto.setLastName("Doe"); dto.setBirthdate("01/01/2000");
