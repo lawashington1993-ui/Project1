@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Log4j2 configuration for the SafetyNet Alerts application. -->
 <Configuration status="WARN">
     <Properties>
+        <!-- Standard log timestamp and message formatting. -->
         <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <!-- Directory used for rotating log files. -->
         <Property name="LOG_DIR">logs</Property>
     </Properties>
     <Appenders>
+        <!-- Writes log events to the console. -->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
+        <!-- Writes log events to a rolling file in the logs directory. -->
         <RollingFile name="File"
                      fileName="${LOG_DIR}/safetynet-alerts.log"
                      filePattern="${LOG_DIR}/safetynet-alerts-%d{yyyy-MM-dd}-%i.log.gz">
@@ -20,6 +25,7 @@
         </RollingFile>
     </Appenders>
     <Loggers>
+        <!-- Enables debug-level logging for the application package. -->
         <Logger name="com.safetynet.alerts" level="debug"/>
         <Root level="info">
             <AppenderRef ref="Console"/>
