@@ -3,14 +3,27 @@ package com.safetynet.alerts.model;
 import jakarta.validation.constraints.NotBlank;
 
 public class Person {
+    // Person's first name.
     @NotBlank
     private String firstName;
+
+    // Person's last name.
     @NotBlank
     private String lastName;
+
+    // Street address where the person lives.
     private String address;
+
+    // City of residence.
     private String city;
+
+    // Postal code or ZIP code.
     private String zip;
+
+    // Contact phone number.
     private String phone;
+
+    // Email address.
     private String email;
 
     public String getFirstName() { return firstName; }
