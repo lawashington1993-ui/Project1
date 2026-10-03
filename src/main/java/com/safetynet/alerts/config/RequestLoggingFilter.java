@@ -14,19 +14,20 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class RequestLoggingFilter extends OncePerRequestFilter {
-    // Logger used to record incoming and outgoing HTTP request details.
+    // This logger records each incoming HTTP request and the status code returned to the client.
+    // It is helpful when we need to debug traffic or understand how the app is being used.
     private static final Logger logger = LoggerFactory.getLogger(RequestLoggingFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        // Log the request before the rest of the filter chain is executed.
+        // Log the request as soon as it arrives so we know which endpoint was called.
         logger.info("{} {}", request.getMethod(), request.getRequestURI());
 
-        // Continue processing the request through the application pipeline.
+        // Let the rest of the Spring pipeline continue normally.
         chain.doFilter(request, response);
 
-        // Log the final HTTP status after the downstream processing completes.
+        // Log the final HTTP status after the controller and business logic finish processing.
         logger.info("{} {} -> {}", request.getMethod(), request.getRequestURI(), response.getStatus());
     }
 }
