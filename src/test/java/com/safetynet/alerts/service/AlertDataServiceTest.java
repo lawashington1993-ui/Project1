@@ -9,10 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import tools.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
+
+import tools.jackson.databind.ObjectMapper;
 
 class AlertDataServiceTest {
     @TempDir Path tempDir;
