@@ -19,7 +19,7 @@ class AlertDataServiceTest {
     @TempDir Path tempDir;
     private AlertDataService service;
 
-    // Creates a temporary dataset file for each test so data changes stay isolated.
+    // Every test gets its own temporary JSON file so data changes stay isolated.
     @BeforeEach
     void setUp() throws Exception {
         Path file = tempDir.resolve("data.json");
@@ -28,7 +28,7 @@ class AlertDataServiceTest {
         service.load();
     }
 
-    // Confirms the JSON dataset loads correctly and the main lookup methods return expected values.
+    // Confirms the dataset loads correctly and the main lookup methods return the expected values.
     @Test
     void loadsAndQueriesJsonData() {
         assertThat(service.data().getPersons()).hasSize(23);
@@ -38,7 +38,7 @@ class AlertDataServiceTest {
         assertThat(service.record("John", "Boyd")).isPresent();
     }
 
-    // Verifies create, update, and delete operations for people persist correctly.
+    // Verifies that creating, updating, and deleting people persists correctly in the JSON file.
     @Test
     void persistsPersonCrud() throws Exception {
         Person person = new Person(); person.setFirstName("Temp"); person.setLastName("Person"); person.setAddress("Temp St");
@@ -51,7 +51,7 @@ class AlertDataServiceTest {
         assertThat(service.deletePerson("Missing", "Person")).isFalse();
     }
 
-    // Verifies the fire station mapping CRUD operations behave as expected.
+    // Verifies the fire station CRUD flow behaves as expected.
     @Test
     void persistsFirestationCrud() {
         Firestation mapping = new Firestation(); mapping.setAddress("Temp Station"); mapping.setStation("9");
@@ -62,7 +62,7 @@ class AlertDataServiceTest {
         assertThat(service.deleteFirestation("Missing", null)).isFalse();
     }
 
-    // Verifies the medical record CRUD flow persists birthdate and medication data correctly.
+    // Verifies that medical records save and update birth dates and medication details correctly.
     @Test
     void persistsMedicalRecordCrud() {
         MedicalRecord record = new MedicalRecord(); record.setFirstName("Temp"); record.setLastName("Record"); record.setBirthdate("01/01/2000"); record.setMedications(List.of("test:1mg"));
