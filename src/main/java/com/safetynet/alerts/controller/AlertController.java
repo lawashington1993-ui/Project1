@@ -23,8 +23,11 @@ import com.safetynet.alerts.service.AlertDataService;
 
 @RestController
 @RequestMapping(produces = "application/json")
+// This class is the HTTP layer of the app.
+// It receives requests from the browser or API client, asks the service layer for data,
+// and returns a JSON response. It does not read files directly.
 public class AlertController {
-    // Central logger for tracking API access and diagnostics.
+    // This logger helps us track API usage and diagnose issues when something goes wrong.
     private static final Logger logger = LoggerFactory.getLogger(AlertController.class);
     private final AlertDataService dataService;
     private final AgeService ageService;
