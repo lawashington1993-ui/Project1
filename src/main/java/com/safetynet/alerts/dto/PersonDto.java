@@ -3,27 +3,27 @@ package com.safetynet.alerts.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class PersonDto {
-    // Person's first name.
+    // The person's first name. This is often used to find the right record.
     @NotBlank
     private String firstName;
 
-    // Person's last name.
+    // The person's last name. It is paired with the first name to identify the person.
     @NotBlank
     private String lastName;
 
-    // Street address for the person.
+    // The street address where the person lives.
     private String address;
 
-    // City where the person lives.
+    // The city part of the person's address.
     private String city;
 
-    // Postal code for the person's city.
+    // The postal or ZIP code for the address.
     private String zip;
 
-    // Contact phone number.
+    // The phone number to reach the person.
     private String phone;
 
-    // Email address for the person.
+    // The person's email address.
     private String email;
 
     public String getFirstName() { return firstName; }
