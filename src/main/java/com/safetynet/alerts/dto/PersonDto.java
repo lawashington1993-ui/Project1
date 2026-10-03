@@ -3,14 +3,27 @@ package com.safetynet.alerts.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class PersonDto {
+    // Person's first name.
     @NotBlank
     private String firstName;
+
+    // Person's last name.
     @NotBlank
     private String lastName;
+
+    // Street address for the person.
     private String address;
+
+    // City where the person lives.
     private String city;
+
+    // Postal code for the person's city.
     private String zip;
+
+    // Contact phone number.
     private String phone;
+
+    // Email address for the person.
     private String email;
 
     public String getFirstName() { return firstName; }
