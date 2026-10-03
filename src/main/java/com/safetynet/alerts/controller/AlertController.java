@@ -24,12 +24,14 @@ import com.safetynet.alerts.service.AlertDataService;
 @RestController
 @RequestMapping(produces = "application/json")
 public class AlertController {
+    // Central logger for tracking API access and diagnostics.
     private static final Logger logger = LoggerFactory.getLogger(AlertController.class);
     private final AlertDataService dataService;
     private final AgeService ageService;
 
     public AlertController(AlertDataService dataService, AgeService ageService) { this.dataService = dataService; this.ageService = ageService; }
 
+    // Returns a simple API index describing the available endpoints.
     @GetMapping("/")
     public Map<String, Object> home() {
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -47,6 +49,7 @@ public class AlertController {
         return payload;
     }
 
+    // Lists residents served by a fire station with adult/child counts.
     @GetMapping("/firestation")
     public ResponseEntity<?> firestation(@RequestParam String stationNumber) {
         List<Person> people = dataService.peopleAtStation(stationNumber);
@@ -60,6 +63,7 @@ public class AlertController {
         return withLinks("/firestation?stationNumber=" + stationNumber, payload);
     }
 
+    // Returns each child in a household and the rest of the household members.
     @GetMapping("/childAlert")
     public ResponseEntity<?> childAlert(@RequestParam String address) {
         List<Person> household = dataService.peopleAt(address);
@@ -74,12 +78,14 @@ public class AlertController {
         return withLinks("/childAlert?address=" + address, payload);
     }
 
+    // Lists phone numbers for people covered by a fire station.
     @GetMapping("/phoneAlert")
     public ResponseEntity<?> phoneAlert(@RequestParam String firestation) {
         List<String> phones = dataService.peopleAtStation(firestation).stream().map(Person::getPhone).distinct().toList();
         return phones.isEmpty() ? empty() : withLinks("/phoneAlert?firestation=" + firestation, phones);
     }
 
+    // Returns residents at an address together with the assigned fire station.
     @GetMapping("/fire")
     public ResponseEntity<?> fire(@RequestParam String address) {
         List<Person> people = dataService.peopleAt(address);
@@ -91,6 +97,7 @@ public class AlertController {
         return withLinks("/fire?address=" + address, payload);
     }
 
+    // Provides a flood-risk view of all households covered by the selected stations.
     @GetMapping("/flood/stations")
     public ResponseEntity<?> flood(@RequestParam String stations) {
         Set<String> requested = Arrays.stream(stations.split(",")).map(String::trim).collect(Collectors.toSet());
@@ -102,6 +109,7 @@ public class AlertController {
         return withLinks("/flood/stations?stations=" + stations, payload);
     }
 
+    // Returns all profile data for a given family name, including medical details.
     @GetMapping("/personInfo")
     public ResponseEntity<?> personInfo(@RequestParam String lastName) {
         List<Person> people = dataService.data().getPersons().stream().filter(p -> lastName.equals(p.getLastName())).toList();
@@ -110,14 +118,20 @@ public class AlertController {
         return withLinks("/personInfo?lastName=" + lastName, payload);
     }
 
+    // Fetches all unique email addresses for residents of a specific city.
     @GetMapping("/communityEmail")
     public ResponseEntity<?> communityEmail(@RequestParam String city) {
         List<String> emails = dataService.data().getPersons().stream().filter(p -> city.equals(p.getCity())).map(Person::getEmail).distinct().toList();
         return emails.isEmpty() ? empty() : withLinks("/communityEmail?city=" + city, emails);
     }
 
+    // Builds a resident payload with contact, age, and medical information.
     private Map<String, Object> medicalPerson(Person person) { Map<String, Object> result = new LinkedHashMap<>(); result.put("firstName", person.getFirstName()); result.put("lastName", person.getLastName()); result.put("phone", person.getPhone()); result.put("age", ageService.ageOf(person, dataService)); addMedical(result, person); return result; }
+
+    // Adds medications and allergies from the person’s medical record, if available.
     private void addMedical(Map<String, Object> result, Person person) { Optional<MedicalRecord> record = dataService.record(person.getFirstName(), person.getLastName()); result.put("medications", record.map(MedicalRecord::getMedications).orElse(List.of())); result.put("allergies", record.map(MedicalRecord::getAllergies).orElse(List.of())); }
+
+    // Adds self/home navigation links to API responses.
     private ResponseEntity<Object> withLinks(String selfHref, Object payload) {
         if (payload instanceof Map<?, ?> map) {
             Map<String, Object> response = new LinkedHashMap<>();
@@ -129,5 +143,7 @@ public class AlertController {
         }
         return ResponseEntity.ok().header("Link", "</>; rel=\"home\"").header("X-API-SELF", selfHref).body(payload);
     }
+
+    // Returns an empty JSON object for no-result responses.
     private ResponseEntity<Map<String, Object>> empty() { return ResponseEntity.ok(Map.of()); }
 }
