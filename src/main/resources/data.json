@@ -1,4 +1,5 @@
 {
+    "_comment": "SafetyNet Alerts application dataset: people, fire station assignments, and medical records.",
     "persons": [
         { "firstName":"John", "lastName":"Boyd", "address":"1509 Culver St", "city":"Culver", "zip":"97451", "phone":"841-874-6512", "email":"jaboyd@email.com" },
         { "firstName":"Jacob", "lastName":"Boyd", "address":"1509 Culver St", "city":"Culver", "zip":"97451", "phone":"841-874-6513", "email":"drk@email.com" },
