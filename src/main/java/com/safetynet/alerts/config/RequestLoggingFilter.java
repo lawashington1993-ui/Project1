@@ -14,10 +14,19 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class RequestLoggingFilter extends OncePerRequestFilter {
+    // Logger used to record incoming and outgoing HTTP request details.
     private static final Logger logger = LoggerFactory.getLogger(RequestLoggingFilter.class);
-    @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+        // Log the request before the rest of the filter chain is executed.
         logger.info("{} {}", request.getMethod(), request.getRequestURI());
+
+        // Continue processing the request through the application pipeline.
         chain.doFilter(request, response);
+
+        // Log the final HTTP status after the downstream processing completes.
         logger.info("{} {} -> {}", request.getMethod(), request.getRequestURI(), response.getStatus());
     }
 }
