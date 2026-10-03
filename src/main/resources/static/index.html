@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SafetyNet Alerts | Data Management</title>
+  <!-- Page styling for the management dashboard. -->
   <style>
     :root { --ink: #17212b; --muted: #65717d; --line: #d9e0e5; --paper: #f6f8f7; --blue: #11698e; --orange: #e76f32; --danger: #b42318; }
     * { box-sizing: border-box; }
@@ -41,11 +42,13 @@
     <p>Data management console for the emergency services information system.</p>
   </header>
   <main>
+    <!-- Dashboard summary and API status indicator. -->
     <div class="intro">
       <div><h2>Manage operational data</h2><p>Choose an action, complete the fields, and submit. Changes are sent to the REST API and written to <code>data.json</code>.</p></div>
       <div class="status">API connected at <span id="apiOrigin"></span></div>
     </div>
     <div class="grid">
+      <!-- Person form for create, update, and delete operations. -->
       <section>
         <h2>Person</h2>
         <p>Add or update a resident, or delete one by first and last name.</p>
@@ -60,6 +63,7 @@
         <div class="actions"><button data-form="person">Send request</button><button class="secondary" data-clear="person">Clear</button></div>
       </section>
 
+      <!-- Fire station form for address-to-station mappings. -->
       <section>
         <h2>Fire station</h2>
         <p>Create or update an address-to-station mapping, or remove one.</p>
@@ -69,6 +73,7 @@
         <div class="actions"><button data-form="station">Send request</button><button class="secondary" data-clear="station">Clear</button></div>
       </section>
 
+      <!-- Medical record form for patient details and allergies. -->
       <section>
         <h2>Medical record</h2>
         <p>Maintain a resident's birthdate, medications, and allergies.</p>
@@ -85,6 +90,7 @@
     <p class="hint">The API returns <code>201 Created</code> for additions, <code>200 OK</code> for updates, <code>204 No Content</code> for deletions, and <code>404 Not Found</code> when a record does not exist.</p>
   </main>
   <script>
+    // Shared DOM helpers and response display for the data management page.
     const result = document.querySelector('#result');
     document.querySelector('#apiOrigin').textContent = window.location.origin;
 
