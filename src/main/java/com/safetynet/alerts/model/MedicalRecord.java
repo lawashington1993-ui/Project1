@@ -6,13 +6,22 @@ import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 
 public class MedicalRecord {
+    // First name of the person in the medical record.
     @NotBlank
     private String firstName;
+
+    // Last name of the person in the medical record.
     @NotBlank
     private String lastName;
+
+    // Birth date used to calculate age.
     @NotBlank
     private String birthdate;
+
+    // Current medications for the person.
     private List<String> medications = new ArrayList<>();
+
+    // Known allergies for the person.
     private List<String> allergies = new ArrayList<>();
 
     public String getFirstName() { return firstName; }
