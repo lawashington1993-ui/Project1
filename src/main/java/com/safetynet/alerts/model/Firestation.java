@@ -3,8 +3,11 @@ package com.safetynet.alerts.model;
 import jakarta.validation.constraints.NotBlank;
 
 public class Firestation {
+    // Address assigned to the fire station.
     @NotBlank
     private String address;
+
+    // Fire station responsible for this address.
     @NotBlank
     private String station;
 
